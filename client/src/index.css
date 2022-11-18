@@ -1,0 +1,131 @@
+* {
+	margin: 0;
+}
+
+
+
+
+.auth {
+	box-sizing: border-box;
+	width: 400px;
+	height: 300px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.auth_form {
+	background-color: aqua;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	padding: 15px;
+}
+
+.auth_form input {
+	height: 35px;
+	border-radius: 12px;
+	border: none;
+	width: 100%;
+}
+
+.Login__button {
+	height: 35px;
+	width: 50%;
+
+}
+
+
+.ChatPage {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.ChatBar {
+	background-color: green;
+	flex: 0 0 33%;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+
+}
+
+.ChatCard {
+	width: 100%;
+	text-align: center;
+	background: #A9A9A9;
+	height: 40px;
+	margin-bottom: 2px;
+}
+
+.active {
+	background: red;
+}
+
+.messagepanel {
+	flex: 0 0 66%;
+	height: 100%;
+	background-color: gold;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.CreateChatComponent {
+	width: 100%;
+	height: 50px;
+	padding: 5px 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.CreateChatComponent_input {
+	width: 80%;
+	height: 100%;
+}
+
+.CreateChatComponent_button {
+	width: 20%;
+	height: 100%;
+}
+
+
+
+.sendmessage {
+	width: 100%;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.sendmessage-input {
+	width: 80%;
+	height: 80%;
+}
+
+.sendmessage-button {
+	width: 10%;
+	height: 80%;
+
+}
+
+#root {
+	height: 100vh;
+	width: 100vw;
+
+}
