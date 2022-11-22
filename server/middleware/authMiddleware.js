@@ -8,7 +8,7 @@ module.exports = function (req, res, next) {
 	const token = str.split(" ")[1]  //Bearer gregoinerign
 	try {
 		if (!token) {
-			res.status.json({ message: "нет токена" })
+			return res.status.json({ message: "нет токена" })
 		}
 		console.log(token)
 		const decoded = jwt.verify(token, process.env.SECRET_KEY)
