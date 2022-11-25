@@ -12,7 +12,9 @@ export default class MessageStore {
 	setMessages(message) {
 		this._messages = (message)
 	}
-
+	addMessages(message) {
+		this._messages.push(message)
+	}
 	get messages() {
 		return this._messages
 	}

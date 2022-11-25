@@ -9,6 +9,7 @@ const ChatBar = observer(() => {
 	const { chats, controler, Activeuser } = useContext(Context)
 	const [nickname, setNickneme] = useState('')
 
+
 	useEffect(() => {
 		async function data() {
 			const c = await getchat(Activeuser.userId)
@@ -19,12 +20,11 @@ const ChatBar = observer(() => {
 		chats.setSelectedChat(chat)
 		const a = await getmessages(chats.selectedChat.id)
 		controler.setMessages(a)
-		console.log(chats.selectedChat)
+		document.getElementsByClassName("point")[0].scrollIntoView()
 	}
 	const requsetcreatechat = async (e) => {
 		e.preventDefault()
 		const a = await createchat(Activeuser.userNickname, nickname)
-		console.log(a)
 		const b = await getchat(Activeuser.userId)
 		chats.setChats(b)
 
@@ -44,7 +44,7 @@ const ChatBar = observer(() => {
 
 			{
 				chats.aliveChats.map(chat =>
-					<div key={chat.id} onClick={() => { click(chat) }} className={chat.id === chats.selectedChat.id ? "ChatCard active" : "ChatCard"} >{chat.host == Activeuser.userId ? chat.nickname : chat.host}</div>
+					<div key={chat.id} onClick={() => { click(chat) }} className={chat.id === chats.selectedChat.id ? "ChatCard active" : "ChatCard"} >{chat.host === Activeuser.userId ? chat.nickname : chat.host}</div>
 				)
 			}
 

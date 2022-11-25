@@ -22,7 +22,7 @@ const App = observer(() => {
 				Activeuser.setUserNickname(data.nickname)
 				Activeuser.setIsAuth(true)
 				if (chats.selectedChat) {
-					const b = await getmessages(chats.selectedChat.id)
+					const b = await getmessages(chats.selectedChat.id, 0)
 					controler.setMessages(b)
 				}
 

@@ -2,7 +2,9 @@
 	margin: 0;
 }
 
-
+body {
+	overflow: hidden;
+}
 
 
 .auth {
@@ -54,41 +56,61 @@
 }
 
 .ChatBar {
-	background-color: green;
+	background-color: #F3F3F3;
 	flex: 0 0 33%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: flex-start;
 	height: 100%;
-
 }
 
 .ChatCard {
-	width: 100%;
+	width: 90%;
 	text-align: center;
-	background: #A9A9A9;
+	background: #76ADFF;
 	height: 40px;
 	margin-bottom: 2px;
+	border-radius: 43px;
 }
 
 .active {
-	background: red;
+	background: #FFD995;
 }
 
 .messagepanel {
 	flex: 0 0 66%;
 	height: 100%;
-	background-color: gold;
+	background-color: #C6C6C6;
 	display: flex;
 	flex-direction: column;
+	justify-content: flex-start;
+}
+
+
+
+.messagepanelheader {
+	position: relative;
+	background-color: #ffffff;
+	height: 9vh;
+	padding: 0 30px;
+	font-size: 5vh;
+	width: 100%;
+	top: 0;
+}
+
+.messages {
+	display: flex;
+	flex-direction: column-reverse;
 	justify-content: flex-end;
 	align-items: center;
+	min-height: calc(80vh - 20px);
+	height: auto;
 }
 
 .CreateChatComponent {
 	width: 90%;
-	height: 60px;
+	height: 50px;
 	padding: 0;
 	display: flex;
 	justify-content: space-between;
@@ -96,10 +118,26 @@
 	border: 1px solid #000;
 	border-radius: 20px;
 	background-color: #ffffff;
-	margin: 0 15px 200px 15px;
+	margin: 35px 15px 35px 15px;
 }
 
+.message {
+	flex-grow: 0;
+	flex-shrink: 0;
+	background-color: #FFD995;
+	border-radius: 100px;
+	text-align: center;
+	margin-bottom: 15px;
+	padding: 15px;
+	max-width: 40%;
+	height: auto;
+	word-wrap: break-word;
+}
 
+.message__section {
+	overflow-y: scroll;
+
+}
 
 .CreateChatComponent_button {
 	border-radius: 20px 0 0 20px;
@@ -113,35 +151,57 @@
 	background-color: #ffffff;
 }
 
+.CreateChatComponent_button svg {
+	border-radius: 15%;
+}
+
+.CreateChatComponent_button svg:hover {
+	background-color: #A9A9A9;
+}
+
 .CreateChatComponent_input {
 	width: 80%;
 	border: none;
 	height: calc(100% - 2px);
 	border: none;
 	outline: none;
-	-webkit-appearance: none;
 	vertical-align: middle;
 	border-radius: 0 20px 20px 0;
+	font-size: 30px;
 }
 
 
 .sendmessage {
-	width: 100%;
-	height: 50px;
+	flex: 0 0 10%;
+	border: 1px solid black;
+	bottom: 20px;
+	width: calc(100% - 60px);
+	height: 11vh;
+	margin: 0 30px;
+	margin-bottom: 20px;
+	background-color: #ffffff;
+	border-radius: 50px;
 	display: flex;
+	justify-content: flex-start;
 	align-items: center;
-	justify-content: space-between;
 }
 
 .sendmessage-input {
-	width: 80%;
-	height: 80%;
+	width: 90%;
+	height: (100% - 2px);
+	border-radius: 50px;
+	border: none;
+	outline: none;
+	vertical-align: middle;
 }
 
 .sendmessage-button {
 	width: 10%;
-	height: 80%;
-
+	height: 100%;
+	border-radius: 50px;
+	border: none;
+	outline: none;
+	cursor: pointer;
 }
 
 #root {

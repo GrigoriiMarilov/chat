@@ -1,5 +1,5 @@
 const { Message, User, Chat } = require("../models/models")
-
+const sequelize = require('sequelize')
 class messageController {
 	async send(req, res) {
 		const { text, userId, chatId } = req.body
@@ -10,13 +10,18 @@ class messageController {
 	}
 	async copy(req, res) {
 		let messagearr = []
-		const { chatId } = req.body
+		const { chatId, offset } = req.body
+
+		if (!chatId) {
+			return res.json("error: undefinded chat id")
+		}
 		const chat = await Chat.findOne({ where: { id: chatId } })
-		const messages = await Message.findAll({ where: { chatId: chatId } })
+		const count = await Message.count({ where: { chatId: chat.id } })
+		const messages = await Message.findAll({ order: sequelize.literal('id DESC'), where: { chatId: chatId }, offset: offset, limit: 30 })
 		for (let i = 0; i < messages.length; i++) {
 			messagearr.push(messages[i])
 		}
-		console.log(messagearr)
+		await res.setHeader('Length', count)
 		return res.json(messagearr)
 	}
 }
