@@ -4,6 +4,7 @@
 
 body {
 	overflow: hidden;
+	margin: 0, auto;
 }
 
 
@@ -135,8 +136,7 @@ body {
 }
 
 .message__section {
-	overflow-y: scroll;
-
+	overflow-y: auto;
 }
 
 .CreateChatComponent_button {

@@ -8,7 +8,6 @@ import MessangerComponent from "../components/MessangerComponent"
 
 
 const Messanger = observer(() => {
-
 	return (
 		<div className="ChatPage">
 			<MessangerComponent />

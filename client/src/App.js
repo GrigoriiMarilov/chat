@@ -27,7 +27,7 @@ const App = observer(() => {
 				}
 
 			}).finally(() => setLoading(false))
-		}, 100)
+		}, 1000)
 
 	},
 		[]

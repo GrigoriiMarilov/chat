@@ -8,22 +8,36 @@ import { createchat, getchat, getmessages, sendmessage } from "../http/chatApi";
 const MessangerComponent = observer(() => {
 	const { Activeuser, chats, controler } = useContext(Context)
 	const userId = Activeuser.userId
+	const [messages, setMessages] = useState(controler.messages)
 	const [nickname, setNickneme] = useState('')
 	const [text, setText] = useState('')
 	const [scr, setScr] = useState(true)
+	const refscroll = useRef()
 
 
 	useEffect(() => {
+		async function response() {
+			await getmessages(chats.selectedChat.id, 0).then((result) => {
+				setMessages(result)
+			})
+		}
+		setInterval(() => response(), 10000)
+		response()
+	}, [chats.selectedChat])
+
+	useEffect(() => {
+		console.log(refscroll)
+	}, [refscroll])
+	useEffect(() => {
 		if (scr) {
-			document.getElementsByClassName("scrollElement")[0].scrollIntoView()
+			let s = document.getElementsByClassName("scrollElement")[0]
+			s.scrollIntoView()
 			setScr(false)
 		}
 	}, [scr])
 
-	async function click(chat) {
+	function click(chat) {
 		chats.setSelectedChat(chat)
-		const a = await getmessages(chats.selectedChat.id)
-		controler.setMessages(a)
 		setScr(true)
 	}
 
@@ -32,8 +46,8 @@ const MessangerComponent = observer(() => {
 		console.log(Activeuser.userId)
 		console.log(chats.selectedChat.id)
 		await sendmessage(text, Activeuser.userId, chats.selectedChat.id)
-		const a = await getmessages(chats.selectedChat.id, 0)
-		controler.setMessages(a)
+		const b = await getmessages(chats.selectedChat.id, 0)
+		controler.setMessages(b)
 		setScr(true)
 	}
 
@@ -42,9 +56,8 @@ const MessangerComponent = observer(() => {
 		const a = await createchat(Activeuser.userNickname, nickname)
 		const b = await getchat(Activeuser.userId)
 		chats.setChats(b)
-
-
 	}
+
 	return (
 		<>
 			<div className="ChatBar">
@@ -57,23 +70,21 @@ const MessangerComponent = observer(() => {
 				</form>
 				{
 					chats.aliveChats.map(chat =>
-						<div key={chat.id} onClick={() => { click(chat) }} className={chat.id === chats.selectedChat.id ? "ChatCard active" : "ChatCard"} >{chat.host === Activeuser.userId ? chat.nickname : chat.host}</div>
+						<div key={chat.id} onClick={() => { click(chat) }} className={chat.id === chats.selectedChat.id ? "ChatCard active" : "ChatCard"} >{chat.host === Activeuser.userNickname ? chat.nickname : chat.host}</div>
 					)
 				}
 			</div>
 			<div className="messagepanel" >
-
-				{<div className="messagepanelheader">{chats.selectedChat.host === Activeuser.userId ? chats.selectedChat.nickname : chats.selectedChat.host}</div>}
+				{<div className="messagepanelheader">{chats.selectedChat.host === Activeuser.userNickname ? chats.selectedChat.nickname : chats.selectedChat.host}</div>}
 				<section className="message__section"  >
 					<div className="messages">
-						<div className="scrollElement"></div>
-						{
-							controler.messages.map(message =>
-								<div key={message.id} className="message" style={userId === message.userId ? { alignSelf: "flex-end" } : { alignSelf: "flex-start" }}>
-									{message.text}
-								</div>
-							)
-						}
+						<div className="scrollElement" ref={refscroll}></div>
+
+						{(messages.map(message =>
+							<div key={message.id} className="message" style={userId === message.userId ? { alignSelf: "flex-end" } : { alignSelf: "flex-start" }}>
+								{message.text}
+							</div>)
+						)}
 
 					</div>
 				</section>
