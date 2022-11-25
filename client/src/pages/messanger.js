@@ -2,8 +2,8 @@
 import { observer } from "mobx-react-lite"
 import React from "react"
 
-import ChatBar from "../components/ChatBar"
-import MesPanel from "../components/MesPanel"
+
+import MessangerComponent from "../components/MessangerComponent"
 
 
 
@@ -11,8 +11,7 @@ const Messanger = observer(() => {
 
 	return (
 		<div className="ChatPage">
-			<ChatBar />
-			<MesPanel />
+			<MessangerComponent />
 		</div>
 	)
 })

@@ -1,11 +1,11 @@
 import axios from "axios"
 
 const $host = axios.create({
-	baseURL: "http://192.168.1.4:5000"
+	baseURL: "http://localhost:5000"
 })
 
 const $authHost = axios.create({
-	baseURL: "http://192.168.1.4:5000"
+	baseURL: "http://localhost:5000"
 })
 
 
