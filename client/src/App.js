@@ -17,6 +17,7 @@ const App = observer(() => {
 			check().then(async data => {
 				Activeuser.setUserId(data.id)
 				const a = await getchat(data.id)
+				console.log(data)
 				chats.setChats(a)
 				Activeuser.setUserEmail(data.email)
 				Activeuser.setUserNickname(data.nickname)

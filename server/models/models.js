@@ -19,6 +19,8 @@ const ChatUser = sequelize.define("ChatUser", {
 })
 const Message = sequelize.define("message", {
 	text: { type: DataTypes.STRING },
+	isRead: { type: DataTypes.BOOLEAN },
+	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, unique: true }
 })
 
 

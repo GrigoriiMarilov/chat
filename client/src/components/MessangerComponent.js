@@ -8,26 +8,29 @@ import { createchat, getchat, getmessages, sendmessage } from "../http/chatApi";
 const MessangerComponent = observer(() => {
 	const { Activeuser, chats, controler } = useContext(Context)
 	const userId = Activeuser.userId
-	const [messages, setMessages] = useState(controler.messages)
+	const [messages, setMessages] = useState([{ id: 0, userId: 0, text: "" }])
+	const [chats1, setChats] = useState([{ id: 0, host: "", nickname: "" }])
+	const [selectedChat1, setSelectedChat1] = useState(chats1[0])
 	const [nickname, setNickneme] = useState('')
 	const [text, setText] = useState('')
 	const [scr, setScr] = useState(true)
+	const [offset, setOffset] = useState(0)
 	const refscroll = useRef()
-
 
 	useEffect(() => {
 		async function response() {
-			await getmessages(chats.selectedChat.id, 0).then((result) => {
-				setMessages(result)
+			await getmessages(chats.selectedChat.id, 0).then(result => {
+				console.log(result.headers.get("Length"))
+				setMessages(result.data)
 			})
 		}
-		setInterval(() => response(), 10000)
-		response()
-	}, [chats.selectedChat])
+		setInterval(() => response(), 6000)
+	}, [])
 
 	useEffect(() => {
 		console.log(refscroll)
 	}, [refscroll])
+
 	useEffect(() => {
 		if (scr) {
 			let s = document.getElementsByClassName("scrollElement")[0]
@@ -38,13 +41,17 @@ const MessangerComponent = observer(() => {
 
 	function click(chat) {
 		chats.setSelectedChat(chat)
+		async function response() {
+			getmessages(chats.selectedChat.id, 0).then(result => {
+				setMessages(result.data)
+			})
+		}
+		response()
 		setScr(true)
 	}
 
 	const click1 = async (e) => {
 		e.preventDefault()
-		console.log(Activeuser.userId)
-		console.log(chats.selectedChat.id)
 		await sendmessage(text, Activeuser.userId, chats.selectedChat.id)
 		const b = await getmessages(chats.selectedChat.id, 0)
 		controler.setMessages(b)
