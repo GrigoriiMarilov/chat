@@ -6,58 +6,112 @@ import { createchat, getchat, getmessages, sendmessage } from "../http/chatApi";
 
 
 const MessangerComponent = observer(() => {
-	const { Activeuser, chats, controler } = useContext(Context)
+	const { Activeuser, chats } = useContext(Context)
 	const userId = Activeuser.userId
-	const [messages, setMessages] = useState([{ id: 0, userId: 0, text: "" }])
+	const [messages, setMessages] = useState([{ id: 0, userId: 0, text: "", createdAt: 0 }])
+	const [messagesLength, setMessagesLength] = useState(0)
 	const [chats1, setChats] = useState([{ id: 0, host: "", nickname: "" }])
-	const [selectedChat1, setSelectedChat1] = useState(chats1[0])
 	const [nickname, setNickneme] = useState('')
 	const [text, setText] = useState('')
 	const [scr, setScr] = useState(true)
-	const [offset, setOffset] = useState(0)
-	const refscroll = useRef()
+	const [offset, setOffset] = useState(30)
+	const [loading, setLoading] = useState(false)
+	const [idIntervals, setIdIntervals] = useState(0)
 
+	function scrollMessagesToBottom() {
+		setTimeout(() => {
+			let element = document.getElementsByClassName("scrollElement")[0]
+			element.scrollIntoView()
+		}, 300)
+	}
+
+	function messagedate(message) {
+		let date = new Date(message.createdAt)
+		let hh = String(date.getHours())
+		let mm = String(date.getMinutes())
+		return hh + ":" + mm
+	}
 	useEffect(() => {
-		async function response() {
-			await getmessages(chats.selectedChat.id, 0).then(result => {
-				console.log(result.headers.get("Length"))
-				setMessages(result.data)
+		clearInterval(idIntervals)
+		function interval() {
+
+			getmessages(chats.selectedChat.id, 0).then(result => {
+				let res = result.data
+				if (res[0].id != messages[0].id && messages.length > 1) {
+
+					setMessages(res)
+					scrollMessagesToBottom()
+					setOffset(30)
+				}
 			})
 		}
-		setInterval(() => response(), 6000)
-	}, [])
+
+		setIdIntervals(setInterval(() => { interval() }, 1000))
+	}, [messages[0], chats.selectedChat])
 
 	useEffect(() => {
-		console.log(refscroll)
-	}, [refscroll])
-
-	useEffect(() => {
-		if (scr) {
-			let s = document.getElementsByClassName("scrollElement")[0]
-			s.scrollIntoView()
-			setScr(false)
+		function messageResponse() {
+			getmessages(chats.selectedChat.id, 0).then(result => {
+				setMessages(result.data)
+				scrollMessagesToBottom()
+			})
 		}
-	}, [scr])
+		messageResponse()
+	}, [chats.selectedChat])
+
+	useEffect(() => {
+		if (loading) {
+			if (messages.length < messagesLength) {
+				getmessages(chats.selectedChat.id, offset).then(result => {
+					setOffset(prevState => prevState + 30)
+					setMessages([...messages, ...result.data])
+					setMessagesLength(result.headers.get("Length"))
+				})
+			}
+		}
+		setLoading(false)
+	}, [loading])
+
+	useEffect(() => {
+		document.getElementsByClassName("message__section")[0].addEventListener("scroll", scrollHandler)
+		return function () {
+			document.getElementsByClassName("message__section")[0].removeEventListener("scroll", scrollHandler)
+		}
+	}, [])
 
 	function click(chat) {
 		chats.setSelectedChat(chat)
 		async function response() {
 			getmessages(chats.selectedChat.id, 0).then(result => {
 				setMessages(result.data)
+				scrollMessagesToBottom()
+				setOffset(30)
+				setMessagesLength(result.headers.get("Length"))
 			})
 		}
 		response()
 		setScr(true)
+		setLoading(false)
 	}
-
 	const click1 = async (e) => {
 		e.preventDefault()
 		await sendmessage(text, Activeuser.userId, chats.selectedChat.id)
-		const b = await getmessages(chats.selectedChat.id, 0)
-		controler.setMessages(b)
+		getmessages(chats.selectedChat.id, 0).then(result => {
+			setMessages(result.data)
+			scrollMessagesToBottom()
+			setOffset(30)
+		})
+		setText("")
 		setScr(true)
+		setLoading(false)
 	}
-
+	const scrollHandler = (e) => {
+		if (document.getElementsByClassName("message__section")[0].scrollTop < 150) {
+			if (!loading) {
+				setLoading(true)
+			}
+		}
+	}
 	const requsetcreatechat = async (e) => {
 		e.preventDefault()
 		const a = await createchat(Activeuser.userNickname, nickname)
@@ -85,14 +139,16 @@ const MessangerComponent = observer(() => {
 				{<div className="messagepanelheader">{chats.selectedChat.host === Activeuser.userNickname ? chats.selectedChat.nickname : chats.selectedChat.host}</div>}
 				<section className="message__section"  >
 					<div className="messages">
-						<div className="scrollElement" ref={refscroll}></div>
+						<div className="scrollElement" ></div>
 
 						{(messages.map(message =>
 							<div key={message.id} className="message" style={userId === message.userId ? { alignSelf: "flex-end" } : { alignSelf: "flex-start" }}>
 								{message.text}
+								<br></br>
+								<span className="data">{messagedate(message)}</span>
 							</div>)
 						)}
-
+						<div className="qeq"></div>
 					</div>
 				</section>
 				{chats.selectedChat ? <form className="sendmessage">

@@ -132,11 +132,23 @@ body {
 	padding: 15px;
 	max-width: 40%;
 	height: auto;
+	font-size: 3vh;
 	word-wrap: break-word;
 }
 
+.data {
+	opacity: 30%;
+	font-size: 14px;
+	position: relative;
+}
+
+.qeq {
+	min-height: 80vh
+}
+
 .message__section {
-	overflow-y: auto;
+	overflow-y: scroll;
+	scroll-behavior: smooth;
 }
 
 .CreateChatComponent_button {
@@ -187,6 +199,7 @@ body {
 }
 
 .sendmessage-input {
+	font-size: 200%;
 	width: 90%;
 	height: (100% - 2px);
 	border-radius: 50px;
