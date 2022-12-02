@@ -22,3 +22,6 @@ export const getmessages = async (chatId, offset) => {
 	const messages = await $host.post("/chat/message/send", { chatId, offset })
 	return messages
 }
+export const readmessages = async (arr) => {
+	await $host.post("/chat/message/read", { arr })
+}

@@ -25,12 +25,12 @@ class messageController {
 	}
 	async read(req, res) {
 		try {
-			const { messageId } = req.body
-			if (messageId) {
-				for (i = 0; i < messageId.length; i++) {
-					const message = Message.findOne({ where: { id: messageId[i] } })
-					if (message) await Message.update({ isRead: true }, { where: { id: messageId } })
+			const { arr } = req.body
+			if (arr && arr.length > 0) {
+				for (let i = 0; i < arr.length; i++) {
+					await Message.update({ isRead: true }, { where: { id: arr[i] } })
 				}
+				return res.json("успешно прочитано")
 			}
 		} catch (error) {
 			return res.json(error)

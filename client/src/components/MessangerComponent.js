@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite"
 import React, { useRef } from "react"
 import { useContext, useEffect, useState } from "react";
 import { Context } from "..";
-import { createchat, getchat, getmessages, sendmessage } from "../http/chatApi";
+import { createchat, getchat, getmessages, readmessages, sendmessage } from "../http/chatApi";
 
 
 const MessangerComponent = observer(() => {
@@ -10,19 +10,22 @@ const MessangerComponent = observer(() => {
 	const userId = Activeuser.userId
 	const [messages, setMessages] = useState([{ id: 0, userId: 0, text: "", createdAt: 0 }])
 	const [messagesLength, setMessagesLength] = useState(0)
-	const [chats1, setChats] = useState([{ id: 0, host: "", nickname: "" }])
+	const [chats1, setChats] = useState([{ id: 0, host: "", nickname: "", isRead: true }])
 	const [nickname, setNickneme] = useState('')
 	const [text, setText] = useState('')
 	const [scr, setScr] = useState(true)
 	const [offset, setOffset] = useState(30)
 	const [loading, setLoading] = useState(false)
 	const [idIntervals, setIdIntervals] = useState(0)
+	const monthNames = ["January", "February", "March", "April", "May", "June",
+		"July", "August", "September", "October", "November", "December"
+	];
 
 	function scrollMessagesToBottom() {
 		setTimeout(() => {
 			let element = document.getElementsByClassName("scrollElement")[0]
 			element.scrollIntoView()
-		}, 300)
+		}, 200)
 	}
 
 	function messagedate(message) {
@@ -31,14 +34,66 @@ const MessangerComponent = observer(() => {
 		let mm = String(date.getMinutes())
 		return hh + ":" + mm
 	}
+	function comparison(i) {
+		if (messages.length > 0) {
+			let dateA = new Date(messages[i].createdAt)
+			if (i < messages.length) {
+				if (i == messages.length - 1) {
+					return (String(dateA.getDate()) + monthNames[dateA.getMonth()])
+				}
+				let dateB = new Date(messages[i + 1].createdAt)
+				let a = dateA.getDate()
+				let b = dateB.getDate()
+				if (a != b) {
+					return (String(a) + monthNames[dateA.getMonth()])
+				}
+				return false
+			}
+			return false
+		}
+		return false
+	}
+	function isRead(obj) {
+		let style = {}
+		if (obj.userId === Activeuser.userId) {
+			if (obj.isRead) {
+				style = { alignSelf: "flex-end" }
+			} else {
+				style = { alignSelf: "flex-end", backgroundColor: "gray" }
+			}
+		} else {
+			if (obj.isRead) {
+				
+				style = { alignSelf: "flex-start", backgroundColor: "white"}
+			} else {
+				style = { alignSelf: "flex-start", backgroundColor: "gray" }
+			}
+		}
+		return style
+	}
+	function read(arr) {
+		let idarray = []
+		let messagearr = messages
+		for (let i = 0; i < arr.length; i++) {
+			if (!arr[i].isRead && arr[i].userId !== Activeuser.userId) {
+				idarray.push(arr[i].id)
+				messagearr[i].isRead = true
+			}
+			if (idarray.length > 0) {
+				setMessages(messagearr)
+				return readmessages(idarray)
+
+			}
+		}
+	}
+
 	useEffect(() => {
 		clearInterval(idIntervals)
+		read(messages)
 		function interval() {
-
 			getmessages(chats.selectedChat.id, 0).then(result => {
 				let res = result.data
-				if (res[0].id != messages[0].id && messages.length > 1) {
-
+				if (res[0] != messages[0] && messages.length > 1) {
 					setMessages(res)
 					scrollMessagesToBottom()
 					setOffset(30)
@@ -46,14 +101,15 @@ const MessangerComponent = observer(() => {
 			})
 		}
 
-		setIdIntervals(setInterval(() => { interval() }, 1000))
-	}, [messages[0], chats.selectedChat])
+		setIdIntervals(setInterval(() => { interval() }, 3500))
+	}, [messages[0]])
 
 	useEffect(() => {
 		function messageResponse() {
 			getmessages(chats.selectedChat.id, 0).then(result => {
 				setMessages(result.data)
 				scrollMessagesToBottom()
+				setMessagesLength(result.headers.get("Length"))
 			})
 		}
 		messageResponse()
@@ -73,10 +129,13 @@ const MessangerComponent = observer(() => {
 	}, [loading])
 
 	useEffect(() => {
-		document.getElementsByClassName("message__section")[0].addEventListener("scroll", scrollHandler)
-		return function () {
-			document.getElementsByClassName("message__section")[0].removeEventListener("scroll", scrollHandler)
-		}
+		setTimeout(() => {
+			document.getElementsByClassName("message__section")[0].addEventListener("scroll", scrollHandler)
+			console.log(loading)
+			return function () {
+				document.getElementsByClassName("message__section")[0].removeEventListener("scroll", scrollHandler)
+			}
+		}, 400)
 	}, [])
 
 	function click(chat) {
@@ -93,6 +152,7 @@ const MessangerComponent = observer(() => {
 		setScr(true)
 		setLoading(false)
 	}
+
 	const click1 = async (e) => {
 		e.preventDefault()
 		await sendmessage(text, Activeuser.userId, chats.selectedChat.id)
@@ -110,6 +170,8 @@ const MessangerComponent = observer(() => {
 			if (!loading) {
 				setLoading(true)
 			}
+
+
 		}
 	}
 	const requsetcreatechat = async (e) => {
@@ -141,21 +203,29 @@ const MessangerComponent = observer(() => {
 					<div className="messages">
 						<div className="scrollElement" ></div>
 
-						{(messages.map(message =>
-							<div key={message.id} className="message" style={userId === message.userId ? { alignSelf: "flex-end" } : { alignSelf: "flex-start" }}>
-								{message.text}
-								<br></br>
-								<span className="data">{messagedate(message)}</span>
-							</div>)
+						{(messages.map(function (message, index) {
+							return (
+								<React.Fragment key={message.id}>
+									<div className="message" style={isRead(message)}>
+										{message.text}
+										<br></br>
+										<span className="data">{messagedate(message)}</span>
+									</div>
+									{comparison(index) ? <div >{comparison(index)}</div> : ""}
+								</React.Fragment>
+							)
+						})
 						)}
 						<div className="qeq"></div>
 					</div>
 				</section>
-				{chats.selectedChat ? <form className="sendmessage">
-					<input type="text" className="sendmessage-input" value={text} onChange={e => setText(e.target.value)}></input>
-					<button onClick={click1} className="sendmessage-button">отправить</button>
-				</form> : ""}
-			</div>
+				{
+					chats.selectedChat ? <form className="sendmessage">
+						<input type="text" className="sendmessage-input" value={text} onChange={e => setText(e.target.value)}></input>
+						<button onClick={click1} className="sendmessage-button">отправить</button>
+					</form> : ""
+				}
+			</div >
 		</>
 	)
 })

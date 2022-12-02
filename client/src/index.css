@@ -122,6 +122,12 @@ body {
 	margin: 35px 15px 35px 15px;
 }
 
+.bomb {
+	background: black;
+	width: 100px;
+	height: 30px;
+}
+
 .message {
 	flex-grow: 0;
 	flex-shrink: 0;
@@ -129,12 +135,13 @@ body {
 	border-radius: 100px;
 	text-align: center;
 	margin-bottom: 15px;
-	padding: 15px;
+	padding: 15px 15px 5px 15px;
 	max-width: 40%;
 	height: auto;
 	font-size: 3vh;
 	word-wrap: break-word;
 }
+
 
 .data {
 	opacity: 30%;
@@ -149,6 +156,7 @@ body {
 .message__section {
 	overflow-y: scroll;
 	scroll-behavior: smooth;
+	padding: 0 5vh;
 }
 
 .CreateChatComponent_button {
