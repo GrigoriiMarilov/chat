@@ -1,6 +1,7 @@
 const { Op } = require("sequelize")
 const apiError = require("../error/apiError")
 const { Chat, User, ChatUser } = require("../models/models")
+const sequelize = require('sequelize')
 
 class chatController {
 	async send(req, res) {
@@ -34,16 +35,22 @@ class chatController {
 
 			let ChatIDs = []
 			const user = User.findOne({ where: { id: userId } })
-
 			const chats = await ChatUser.findAll({ where: { userId: userId } })
+
 			for (let i = 0; i < chats.length; i++) {
 				let id = chats[i].chatId
-				const chatsforuser = await Chat.findOne({ where: { id: id } })
-				ChatIDs.push(chatsforuser)
+				ChatIDs.push(id)
 			}
-
-			return res.json(ChatIDs)
+			const chatforuser = await Chat.findAll({
+				order: [["updatedAt", "DESC"]], where: {
+					id: {
+						[Op.or]: ChatIDs
+					}
+				}
+			})
+			return res.json(chatforuser)
 		}
 	}
 }
+
 module.exports = new chatController

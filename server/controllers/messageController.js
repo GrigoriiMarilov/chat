@@ -6,6 +6,12 @@ class messageController {
 		const user = await User.findOne({ where: { id: userId } })
 		const chat = await Chat.findOne({ where: { id: chatId } })
 		const sendMessage = await Message.create({ text: text, userId: userId, chatId: chatId, isRead: false })
+		chat.changed("updatedAt", true)
+		chat.set({
+			message: text,
+			updatedAt: new Date()
+		})
+		await chat.save()
 		return res.json("Успех")
 	}
 	async copy(req, res) {

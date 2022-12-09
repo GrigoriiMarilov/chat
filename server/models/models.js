@@ -11,11 +11,13 @@ const User = sequelize.define("user", {
 const Chat = sequelize.define("chat", {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, unique: true },
 	host: { type: DataTypes.STRING },
-	nickname: { type: DataTypes.STRING }
+	nickname: { type: DataTypes.STRING },
+	message: { type: DataTypes.STRING }
 })
 const ChatUser = sequelize.define("ChatUser", {
 	chatId: { type: DataTypes.INTEGER, primaryKey: true },
-	userId: { type: DataTypes.INTEGER, primaryKey: true }
+	userId: { type: DataTypes.INTEGER, primaryKey: true },
+	updatedAt: { type: DataTypes.DATE }
 })
 const Message = sequelize.define("message", {
 	text: { type: DataTypes.STRING },

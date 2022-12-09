@@ -63,8 +63,8 @@ const MessangerComponent = observer(() => {
 			}
 		} else {
 			if (obj.isRead) {
-				
-				style = { alignSelf: "flex-start", backgroundColor: "white"}
+
+				style = { alignSelf: "flex-start", backgroundColor: "white" }
 			} else {
 				style = { alignSelf: "flex-start", backgroundColor: "gray" }
 			}
@@ -193,7 +193,7 @@ const MessangerComponent = observer(() => {
 				</form>
 				{
 					chats.aliveChats.map(chat =>
-						<div key={chat.id} onClick={() => { click(chat) }} className={chat.id === chats.selectedChat.id ? "ChatCard active" : "ChatCard"} >{chat.host === Activeuser.userNickname ? chat.nickname : chat.host}</div>
+						<div key={chat.id} onClick={() => { click(chat) }} className={chat.id === chats.selectedChat.id ? "ChatCard active" : "ChatCard"} >{chat.host === Activeuser.userNickname ? chat.nickname : chat.host}<br></br><span>{chat.message}</span></div>
 					)
 				}
 			</div>
