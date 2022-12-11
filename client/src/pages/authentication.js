@@ -40,11 +40,11 @@ const Authentication = observer(() => {
 	}
 	return (
 		<div className="auth">
-			<form className="auth_form">
+			<form className="auth__form">
 				<h2>{isLogin ? "Авторизация" : "Регистрация"}</h2>
-				<input placeholder="Ваш Email" type="login" value={email} onChange={e => setEmail(e.target.value)}></input>
-				<input placeholder="Ваш пароль" type="password" value={password} onChange={e => setPassword(e.target.value)}></input>
-				{!isLogin ? <input placeholder="Ваш никнейм" type="" value={nickname} onChange={e => setNickname(e.target.value)} ></input> : ""}
+				<input className="input" placeholder="Ваш Email" type="login" value={email} onChange={e => setEmail(e.target.value)}></input>
+				<input className="input" placeholder="Ваш пароль" type="password" value={password} onChange={e => setPassword(e.target.value)}></input>
+				{!isLogin ? <input className="input" placeholder="Ваш никнейм" type="" value={nickname} onChange={e => setNickname(e.target.value)} ></input> : ""}
 				<span>{isLogin ? "Нет аккаунта? " : "Уже есть аккаунт? "}
 					{isLogin ?
 						<Link to={REGISTRATION_ROUTE}>зарегестрируйтесь!</Link>
@@ -53,9 +53,9 @@ const Authentication = observer(() => {
 					}
 				</span>
 				{isLogin ?
-					<button className="Login_button" onClick={click} >Войти</button>
+					<button className="login__button" onClick={click} >Войти</button>
 					:
-					<button className="Login_button" onClick={click}>Зарегестрировать</button>
+					<button className="login__button" onClick={click}>Зарегестрировать</button>
 				}
 			</form>
 		</div>

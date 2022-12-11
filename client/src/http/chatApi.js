@@ -8,7 +8,6 @@ export const createchat = async (nickname1, nickname2) => {
 }
 export const getchat = async (userId) => {
 	const chat = await $host.post("/chat/getchat/", { userId })
-
 	return chat.data
 }
 

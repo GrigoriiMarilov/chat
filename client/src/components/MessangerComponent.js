@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite"
-import React, { useRef } from "react"
+import React, { useLayoutEffect } from "react"
 import { useContext, useEffect, useState } from "react";
 import { Context } from "..";
 import { createchat, getchat, getmessages, readmessages, sendmessage } from "../http/chatApi";
@@ -7,20 +7,24 @@ import { createchat, getchat, getmessages, readmessages, sendmessage } from "../
 
 const MessangerComponent = observer(() => {
 	const { Activeuser, chats } = useContext(Context)
-	const userId = Activeuser.userId
 	const [messages, setMessages] = useState([{ id: 0, userId: 0, text: "", createdAt: 0 }])
 	const [messagesLength, setMessagesLength] = useState(0)
-	const [chats1, setChats] = useState([{ id: 0, host: "", nickname: "", isRead: true }])
 	const [nickname, setNickneme] = useState('')
 	const [text, setText] = useState('')
-	const [scr, setScr] = useState(true)
 	const [offset, setOffset] = useState(30)
 	const [loading, setLoading] = useState(false)
 	const [idIntervals, setIdIntervals] = useState(0)
 	const monthNames = ["January", "February", "March", "April", "May", "June",
 		"July", "August", "September", "October", "November", "December"
 	];
-
+	function chatDate(date) {
+		let a = new Date(date)
+		let m = a.getMinutes()
+		if (m < 10) {
+			m = "0" + String(m)
+		}
+		return String(a.getHours()) + " : " + m
+	}
 	function scrollMessagesToBottom() {
 		setTimeout(() => {
 			let element = document.getElementsByClassName("scrollElement")[0]
@@ -38,14 +42,14 @@ const MessangerComponent = observer(() => {
 		if (messages.length > 0) {
 			let dateA = new Date(messages[i].createdAt)
 			if (i < messages.length) {
-				if (i == messages.length - 1) {
-					return (String(dateA.getDate()) + monthNames[dateA.getMonth()])
+				if (i === messages.length - 1) {
+					return (String(dateA.getDate()) + " " + monthNames[dateA.getMonth()])
 				}
 				let dateB = new Date(messages[i + 1].createdAt)
 				let a = dateA.getDate()
 				let b = dateB.getDate()
-				if (a != b) {
-					return (String(a) + monthNames[dateA.getMonth()])
+				if (a !== b) {
+					return (String(a) + " " + monthNames[dateA.getMonth()])
 				}
 				return false
 			}
@@ -93,14 +97,18 @@ const MessangerComponent = observer(() => {
 		function interval() {
 			getmessages(chats.selectedChat.id, 0).then(result => {
 				let res = result.data
-				if (res[0] != messages[0] && messages.length > 1) {
+				if (JSON.stringify(res[0]) != JSON.stringify(messages[0]) && messages.length > 1) {
 					setMessages(res)
 					scrollMessagesToBottom()
 					setOffset(30)
 				}
 			})
+			getchat(Activeuser.userId).then(result => {
+				if (JSON.stringify(chats.aliveChats) !== JSON.stringify(result)) {
+					chats.setChats(result)
+				}
+			})
 		}
-
 		setIdIntervals(setInterval(() => { interval() }, 3500))
 	}, [messages[0]])
 
@@ -131,7 +139,6 @@ const MessangerComponent = observer(() => {
 	useEffect(() => {
 		setTimeout(() => {
 			document.getElementsByClassName("message__section")[0].addEventListener("scroll", scrollHandler)
-			console.log(loading)
 			return function () {
 				document.getElementsByClassName("message__section")[0].removeEventListener("scroll", scrollHandler)
 			}
@@ -149,7 +156,6 @@ const MessangerComponent = observer(() => {
 			})
 		}
 		response()
-		setScr(true)
 		setLoading(false)
 	}
 
@@ -162,7 +168,6 @@ const MessangerComponent = observer(() => {
 			setOffset(30)
 		})
 		setText("")
-		setScr(true)
 		setLoading(false)
 	}
 	const scrollHandler = (e) => {
@@ -176,7 +181,7 @@ const MessangerComponent = observer(() => {
 	}
 	const requsetcreatechat = async (e) => {
 		e.preventDefault()
-		const a = await createchat(Activeuser.userNickname, nickname)
+		await createchat(Activeuser.userNickname, nickname)
 		const b = await getchat(Activeuser.userId)
 		chats.setChats(b)
 	}
@@ -193,7 +198,7 @@ const MessangerComponent = observer(() => {
 				</form>
 				{
 					chats.aliveChats.map(chat =>
-						<div key={chat.id} onClick={() => { click(chat) }} className={chat.id === chats.selectedChat.id ? "ChatCard active" : "ChatCard"} >{chat.host === Activeuser.userNickname ? chat.nickname : chat.host}<br></br><span>{chat.message}</span></div>
+						<div key={chat.id} onClick={() => { click(chat) }} className={chat.id === chats.selectedChat.id ? "ChatCard active" : "ChatCard"} ><span className="nickname">{chat.host === Activeuser.userNickname ? chat.nickname : chat.host}</span><br></br><span className="time">{chatDate(chat.updatedAt)}</span><span className="chat-message">{chat.message}</span></div>
 					)
 				}
 			</div>
@@ -225,7 +230,7 @@ const MessangerComponent = observer(() => {
 						<button onClick={click1} className="sendmessage-button">отправить</button>
 					</form> : ""
 				}
-			</div >
+			</div>
 		</>
 	)
 })
